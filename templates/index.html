@@ -4,17 +4,48 @@
     <title>AI Chatbot</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
-<body>
+<body class="light">
 
-<div class="chat-container">
-    <div class="chat-header">🤖 AI Chatbot</div>
+<div class="app">
 
-    <div id="chat-box"></div>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <div class="profile">
+            <h3>👤 User</h3>
+            <p>AI Explorer</p>
+        </div>
 
-    <div class="chat-input">
-        <input type="text" id="user-input" placeholder="Type a message..." />
-        <button onclick="sendMessage()">Send</button>
+        <div class="menu">
+            <button onclick="newChat()">➕ New Chat</button>
+            <button onclick="openSettings()">⚙ Settings</button>
+        </div>
+
+        <div class="history">
+            <h4>Chat History</h4>
+            <ul id="history-list"></ul>
+        </div>
     </div>
+
+    <!-- Main Chat -->
+    <div class="chat-area">
+        <div class="chat-header">
+            <span>🤖 AI Chatbot</span>
+            <div class="controls">
+                <label class="switch">
+                    <input type="checkbox" onclick="toggleTheme()">
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <div id="chat-box"></div>
+
+        <div class="chat-input">
+            <input type="text" id="user-input" placeholder="Type something smart..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+    </div>
+
 </div>
 
 <script src="{{ url_for('static', filename='script.js') }}"></script>

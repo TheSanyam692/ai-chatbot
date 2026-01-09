@@ -1,39 +1,55 @@
-const inputField = document.getElementById("user-input");
 const chatBox = document.getElementById("chat-box");
+const inputField = document.getElementById("user-input");
+const historyList = document.getElementById("history-list");
 
-// Send message on Enter key
-inputField.addEventListener("keypress", function (e) {
-    if (e.key === "Enter") {
-        sendMessage();
-    }
+let chatCount = 1;
+
+// ENTER KEY
+inputField.addEventListener("keypress", e => {
+    if (e.key === "Enter") sendMessage();
 });
 
+// SEND MESSAGE
 function sendMessage() {
-    let message = inputField.value.trim();
-    if (message === "") return;
+    let msg = inputField.value.trim();
+    if (!msg) return;
 
-    // User message
-    let userDiv = document.createElement("div");
-    userDiv.className = "message user";
-    userDiv.innerText = message;
-    chatBox.appendChild(userDiv);
-
-    inputField.value = "";
-    chatBox.scrollTop = chatBox.scrollHeight;
+    addMessage(msg, "user");
+    saveHistory(msg);
 
     fetch("/chat", {
         method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message: message })
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
     })
     .then(res => res.json())
-    .then(data => {
-        let botDiv = document.createElement("div");
-        botDiv.className = "message bot";
-        botDiv.innerText = data.reply;
-        chatBox.appendChild(botDiv);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    });
+    .then(data => addMessage(data.reply, "bot"));
+
+    inputField.value = "";
+}
+
+// ADD MESSAGE
+function addMessage(text, type) {
+    let div = document.createElement("div");
+    div.className = `message ${type}`;
+    div.innerText = text;
+    chatBox.appendChild(div);
+    chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+// THEME TOGGLE
+function toggleTheme() {
+    document.body.classList.toggle("dark");
+}
+
+// CHAT HISTORY
+function saveHistory(msg) {
+    let li = document.createElement("li");
+    li.innerText = `Chat ${chatCount++}: ${msg.substring(0, 15)}...`;
+    historyList.appendChild(li);
+}
+
+// NEW CHAT
+function newChat() {
+    chatBox.innerHTML = "";
 }

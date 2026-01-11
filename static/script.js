@@ -1,34 +1,30 @@
 const chatBox = document.getElementById("chat-box");
-const inputField = document.getElementById("user-input");
-const historyList = document.getElementById("history-list");
+const input = document.getElementById("user-input");
+const sidebar = document.getElementById("sidebar");
+const historyBox = document.getElementById("chat-history");
 
-let chatCount = 1;
-
-// ENTER KEY
-inputField.addEventListener("keypress", e => {
+input.addEventListener("keypress", e => {
     if (e.key === "Enter") sendMessage();
 });
 
-// SEND MESSAGE
 function sendMessage() {
-    let msg = inputField.value.trim();
-    if (!msg) return;
+    let text = input.value.trim();
+    if (!text) return;
 
-    addMessage(msg, "user");
-    saveHistory(msg);
+    removeEmpty();
+    addMessage(text, "user");
 
     fetch("/chat", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg })
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({message: text})
     })
     .then(res => res.json())
     .then(data => addMessage(data.reply, "bot"));
 
-    inputField.value = "";
+    input.value = "";
 }
 
-// ADD MESSAGE
 function addMessage(text, type) {
     let div = document.createElement("div");
     div.className = `message ${type}`;
@@ -37,19 +33,27 @@ function addMessage(text, type) {
     chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// THEME TOGGLE
+function removeEmpty() {
+    let e = document.querySelector(".empty");
+    if (e) e.remove();
+}
+
+function toggleSidebar() {
+    sidebar.classList.toggle("collapsed");
+}
+
 function toggleTheme() {
     document.body.classList.toggle("dark");
+    document.body.classList.toggle("light");
 }
 
-// CHAT HISTORY
-function saveHistory(msg) {
-    let li = document.createElement("li");
-    li.innerText = `Chat ${chatCount++}: ${msg.substring(0, 15)}...`;
-    historyList.appendChild(li);
-}
-
-// NEW CHAT
 function newChat() {
-    chatBox.innerHTML = "";
+    fetch("/new_chat", {method: "POST"})
+    .then(() => {
+        chatBox.innerHTML = `
+            <div class="empty">
+                <h2>JARVIS AI</h2>
+                <p>Futuristic personal assistant</p>
+            </div>`;
+    });
 }

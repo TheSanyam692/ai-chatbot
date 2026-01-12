@@ -665,7 +665,12 @@
                 },
                 body: JSON.stringify({ message: text })
             })
-            .then(res => res.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
             .then(data => {
                 typingIndicator.style.display = 'none';
                 addMessage(data.reply, 'bot');
@@ -676,8 +681,8 @@
             })
             .catch(error => {
                 typingIndicator.style.display = 'none';
-                addMessage('Sorry, I encountered an error. Please try again.', 'bot');
-                console.error('Error:', error);
+                console.error('Full error:', error);
+                addMessage('Hmm, I can help you! Try asking about time, date, jokes, or math!', 'bot');
             });
         }
 
